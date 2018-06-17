@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PCTest : MonoBehaviour
+public class PTest : MonoBehaviour
 {
     #region Class Description
 
-    /*Lorem ipsum parmitsum canipsum waginger the blinger faninginer shplanininer*/
+    /*Failsafe Player Controller class for when I inevitably fuck up the regular player controller. Version Control.*/
 
     #endregion
 
@@ -61,7 +61,7 @@ public class PCTest : MonoBehaviour
     public Transform RE;
 
     [HideInInspector]
-    public bool isSneaking, isSmelly, hasID, isInCover, disableControl;
+    public bool isSneaking, isSmelly, hasID, isInCover, disableControl, disableInput;
     //detection booleans
 
     //grabbing variables
@@ -107,14 +107,16 @@ public class PCTest : MonoBehaviour
             isBoostingCheck();
             isWalkingCheck();
             SneakCheck();
+
             Gravity();
             SimpleMove();
             Jump();
             FinalMove();
+
             GroundChecking();
             CollisionCheck();
-            PickUp();
 
+            PickUp();
         }
 
         else if (isBoosting)
@@ -124,13 +126,19 @@ public class PCTest : MonoBehaviour
 
         if (isSneakWalking)
         {
-            Debug.Log("Well you certainly are sneak walking.");
             if (gameObject.GetComponent<Player.CoverSystem>() != null)
             {
+                //call cover system
                 gameObject.GetComponent<Player.CoverSystem>().InitiateCoverSystem();
             }
-            // sneak animation, call wall snap check. 
+
         }
+
+        if (isHolding && isInCover)
+        {
+            Drop();
+        }
+
         disableControlCheck();
     }
 
@@ -219,7 +227,7 @@ public class PCTest : MonoBehaviour
     //private float currentGravity = 0;
 
 
-    private Vector3 liftPoint = new Vector3(0, 1.2f, 0);
+    private Vector3 liftPoint = new Vector3(0, 0, 0);
     private RaycastHit groundHit;
     private Vector3 groundCheckPoint = new Vector3(0, -0.87f, 0);
 
@@ -401,13 +409,20 @@ public class PCTest : MonoBehaviour
             }
         }
 
+        if (isHolding && isInCover)
+        {
+            Drop();
+        }
 
     }
 
     private void CheckObject()
     {
-        Ray ray = new Ray(transform.position, transform.forward);
+        float grabFloat = 1f - (playerHeight / 2);
+        Vector3 grabRay = transform.TransformPoint(0, grabFloat, 0);
+        Ray ray = new Ray(grabRay, transform.forward);
         RaycastHit hit;
+        Debug.Log("check vector is at height " + grabFloat);
 
         if (Physics.Raycast(ray, out hit, grabRange, isGrabbable))
         {
@@ -539,12 +554,16 @@ public class PCTest : MonoBehaviour
         //if tag = curecalf, disable gravity, pickup animation, move calf above head, child to player, isHolding = true
         //if tag = pickup, pocket animation, destroy item, add to inventory
         //else ignore
+        // disable input while picking up animation is playing.
     }
 
     private void Drop()
     {
+        float bodyFromGround = 0.5f - (playerHeight / 2);
+        float setInFrontDist = 1.5f;
+        Vector3 dropPoint = transform.TransformPoint(0, bodyFromGround, setInFrontDist);
         grabObject.transform.SetParent(null);
-        grabObject.transform.position += new Vector3(0, -2.5f, 0);
+        grabObject.transform.position = dropPoint;
         grabObject = null;
         isHolding = false;
         isHeldOverhead = false;

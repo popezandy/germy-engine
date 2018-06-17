@@ -8,6 +8,7 @@ namespace Player {
 
         public float spaceFromWall = 0.1f;
         public float wallBuffer;
+        public float wallMoveSpeed = 2f;
 
         [Range (0, 1)]
         public float minimumThickness = 0.5f;
@@ -15,6 +16,8 @@ namespace Player {
         [Range (0, 1)]
         public float crouchAmount = 0.2f;
 
+
+        private float grabRange;
         private float checkerDistanceBuffer;
         private Vector3 checkerNormalBuffer;
 
@@ -36,6 +39,7 @@ namespace Player {
 
             isInCover = gameObject.GetComponent<PlayerController>().isInCover;
             coverMask = gameObject.GetComponent<PlayerController>().isGrabbable;
+            grabRange = gameObject.GetComponent<PlayerController>().grabRange;
 
             if (Input.GetButton("sneak"))
             {
@@ -46,6 +50,7 @@ namespace Player {
                 }
                 if (isInCover)
                 {
+                    CheckForGround();
                     SetCurrentPosition();
                     CheckNewPosition();
                     UpdateCurrentPosition();
@@ -67,12 +72,10 @@ namespace Player {
             Ray ray = new Ray(crouchHeight, transform.forward);
             RaycastHit tempHit = new RaycastHit();
 
-            if (Physics.Raycast(ray, out tempHit, 4, coverMask))
+            if (Physics.Raycast(ray, out tempHit, grabRange, coverMask))
             {
                 checkerDistanceBuffer = tempHit.distance;
                 checkerNormalBuffer = tempHit.normal;
-
-
 
                 Vector3 leftCheck = transform.TransformPoint(-minimumThickness, -crouchAmount, 0);
                 Vector3 rightCheck = transform.TransformPoint(minimumThickness, -crouchAmount, 0);
@@ -82,11 +85,6 @@ namespace Player {
 
                 RaycastHit leftHit = new RaycastHit();
                 RaycastHit rightHit = new RaycastHit();
-
-
-                
-                Debug.DrawRay(leftCheck, transform.forward, Color.black);
-                Debug.DrawRay(rightCheck, transform.forward, Color.black);
 
                 if (Physics.Raycast(leftRay, out leftHit, checkerDistanceBuffer, coverMask) || Physics.Raycast(rightRay, out rightHit, checkerDistanceBuffer, coverMask))
                     {
@@ -111,7 +109,7 @@ namespace Player {
             if (Input.GetAxis("Horizontal") != 0 || Input.GetAxis("Vertical") != 0)
             {
                 float inputDisplacement = wallBuffer * Input.GetAxis("Horizontal");
-                Vector3 checkPos = new Vector3(transform.position.x + inputDisplacement, transform.position.y, transform.position.z);
+                Vector3 checkPos = transform.TransformPoint(inputDisplacement, 0, 0);
                 Ray ray = new Ray(checkPos, -transform.forward);
                 RaycastHit checkHit = new RaycastHit();
                 if (Physics.Raycast(ray, out checkHit, 1f, coverMask))
@@ -120,7 +118,10 @@ namespace Player {
                     checkerPosition = checkHit.point;
                     checkerRotation = checkHit.normal;
                 }
-                else { endOfCover = true; }
+                else
+                {
+                    endOfCover = true;
+                }
             }
         } 
 
@@ -129,10 +130,9 @@ namespace Player {
             if (!endOfCover)
             {
                 Debug.DrawLine(checkerPosition, transform.position, Color.green, 10f);
-                tempPosition = checkerPosition;
+                tempPosition = Vector3.Lerp(tempPosition, checkerPosition, wallMoveSpeed * Time.deltaTime);
                 snapOrientation = checkerRotation;
             }
-            else return;
         }
 
         private void CheckLeaveInput()
@@ -142,6 +142,20 @@ namespace Player {
                 gameObject.GetComponent<PlayerController>().isInCover = false;
             }
                 
+        }
+
+        private void CheckForGround()
+        {
+            Ray ray = new Ray(transform.position, -transform.up);
+            RaycastHit tempHit = new RaycastHit();
+            if (Physics.Raycast(ray, out tempHit, 3.0f))
+            {
+                float playerHeight = gameObject.GetComponent<PlayerController>().playerHeight;
+                if (tempHit.distance > playerHeight/2)
+                {
+                    gameObject.GetComponent<PlayerController>().isInCover = false;
+                }
+            }
         }
         /* If the player is holding sneak, and they approach a wall with
         * reasonable intent, they will snap to that wall, drop the calf

@@ -735,8 +735,8 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1305413933692372}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 42.4, y: 2.18, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalPosition: {x: 0.6, y: 2.5, z: 13}
+  m_LocalScale: {x: 1, y: 1.5, z: 1}
   m_Children:
   - {fileID: 4471070825917456}
   - {fileID: 4716873332163850}
@@ -1376,8 +1376,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   spaceFromWall: 0.7
-  wallBuffer: 0.1
-  minimumThickness: 0.5
+  wallBuffer: 1
+  wallMoveSpeed: 3
+  minimumThickness: 1
   crouchAmount: 0.55
 --- !u!114 &114593176136801360
 MonoBehaviour:
@@ -1418,9 +1419,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3a497dd98fe82b64ca0b1565e9ce80c7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerHeight: 2
+  playerHeight: 3
   grabRange: 3
   trueMove: 10
+  turnSpeed: 250
   smooth: 0
   smoothSpeed: 0.1
   jumpForce: 4
@@ -1446,6 +1448,7 @@ MonoBehaviour:
   hasID: 0
   isInCover: 0
   disableControl: 0
+  disableInput: 0
 --- !u!135 &135248183419159286
 SphereCollider:
   m_ObjectHideFlags: 1
@@ -1457,7 +1460,7 @@ SphereCollider:
   m_Enabled: 1
   serializedVersion: 2
   m_Radius: 0.5
-  m_Center: {x: 0, y: 0.5, z: 0}
+  m_Center: {x: 0, y: -0.1, z: 0}
 --- !u!136 &136204248127092620
 CapsuleCollider:
   m_ObjectHideFlags: 1

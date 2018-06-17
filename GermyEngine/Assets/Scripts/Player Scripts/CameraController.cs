@@ -14,6 +14,7 @@ public class CameraController : MonoBehaviour {
 	//private bool isAiming = false;
 
 	public float rotationSmoothTime = .12f;
+    public float snapSmoothTime = 1f;
 	Vector3 rotationSmoothVelocity;
 	Vector3 currentRotation;
 
@@ -76,7 +77,8 @@ public class CameraController : MonoBehaviour {
 	}
 
 	private void WallCheck(){
-		Ray ray = new Ray(target.position, -target.forward);
+		Ray ray = new Ray(transform.position, -transform.forward);
+        // originally target.transform.position, -target.transform.forward;
 		RaycastHit hit;
 
 		if (Physics.SphereCast (ray, 0.2f, out hit, 0.7f, collisionMask)) {
@@ -173,13 +175,16 @@ public class CameraController : MonoBehaviour {
 
         if (!target.GetComponent<PlayerController>().disableControl)
         {
+            
             transform.eulerAngles = currentRotation;
 
+            /*
 		    Vector3 e = transform.eulerAngles;
 		    e.x = 0;
 
+            
 		    target.eulerAngles = e;
-
+            */
         }
         else
             {
@@ -191,9 +196,12 @@ public class CameraController : MonoBehaviour {
     {
 
         Vector3 temp = target.transform.position + (target.transform.forward.normalized * 8);
+        temp.y = target.transform.position.y + 2;
 
-        transform.position = Vector3.Lerp(transform.position, temp, rotationSmoothTime * Time.deltaTime);
+        transform.position = Vector3.Lerp(transform.position, temp, snapSmoothTime * Time.deltaTime);
         transform.LookAt(target);
+        //currentRotation = transform.eulerAngles;
+
         
         /*
         if (!pitchLock)
