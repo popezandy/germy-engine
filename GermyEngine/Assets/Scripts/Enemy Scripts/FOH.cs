@@ -35,8 +35,20 @@ public class FOH : MonoBehaviour {
 
     #region Custom Methods
 
-    /*CheckIsInFOH actually has CheckIsDetected as a nested function. First check if target is in range. If it is, check if the target is sneaking.
-    if either is untrue, isInFOH is false*/
+    /*CheckIsInFOH has CheckIsDetected as a nested function. First check if target is in range. If it is, check if the target is sneaking.
+    if either is untrue, isInFOH is false
+    
+         This class is physically usable but should be converted to an IState to improve reusability. The EnemyCtrl script isn't modular
+         to call considering it's only for enemies. It would be better to work with IState, StateMachine, and InfoBuffer.
+         What's more, because SearchFor implies a radius without an angle limit, it might be best to make one ISTATE with all
+         possible detection methods. The constructor can ask for boolean values about which detection types the particular
+         enemy has. It can then package all of that data and send it back to the enemy for processing.
+         This works when all detection types have the same radius for an enemy, although it could also work if
+         there were alternate constructors which included a custom radius for each detection type. It would unload
+         a TON of code from each enemy while giving them the power to refine information to make complex decisions.
+         */
+
+    
 
     private void CheckIsInFOH ()
     {

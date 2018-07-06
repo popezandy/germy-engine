@@ -22,8 +22,9 @@ GameObject:
   - component: {fileID: 33300336785634030}
   - component: {fileID: 23066390494062110}
   - component: {fileID: 114588764886255602}
-  - component: {fileID: 114866069979124400}
-  - component: {fileID: 114698639422043912}
+  - component: {fileID: 114110349198680862}
+  - component: {fileID: 114835172792002612}
+  - component: {fileID: 114995159342139060}
   m_Layer: 9
   m_Name: GermyPrimitive
   m_TagString: Untagged
@@ -86,6 +87,20 @@ MeshFilter:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1755550142775582}
   m_Mesh: {fileID: 4300000, guid: 5e3776e9ddad4244b88576f1f1cc1f0a, type: 3}
+--- !u!114 &114110349198680862
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1755550142775582}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b62352660d862974184c6c5f1f19ba52, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxAngle: 30
+  maxRadius: 0
+  isInFOV: 0
 --- !u!114 &114588764886255602
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -102,7 +117,7 @@ MonoBehaviour:
   moveSpeed: 1
   curveRotation: 0
   playerObject: {fileID: 0}
---- !u!114 &114698639422043912
+--- !u!114 &114835172792002612
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
@@ -113,9 +128,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: db12a359cb0c98a458682592adbae5f1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxRadius: 20
+  maxRadius: 10
   isInFOH: 0
---- !u!114 &114866069979124400
+--- !u!114 &114995159342139060
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
@@ -123,9 +138,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 1755550142775582}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b62352660d862974184c6c5f1f19ba52, type: 3}
+  m_Script: {fileID: 11500000, guid: 0e32f02a8da67884bb105cbb47dece55, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxAngle: 30
-  maxRadius: 20
-  isInFOV: 0
+  hasFOV: 1
+  hasFOH: 1
+  hasFOS: 0
+  hasCheckID: 0
+  activePatrol: 0

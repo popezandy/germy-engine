@@ -1240,6 +1240,52 @@ GameObject:
   m_PrefabParentObject: {fileID: 1305413933692372, guid: 56596b65938dc3840979248ed0347e2a,
     type: 2}
   m_PrefabInternal: {fileID: 1804087591}
+--- !u!1 &1886855508
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  serializedVersion: 5
+  m_Component:
+  - component: {fileID: 1886855510}
+  - component: {fileID: 1886855509}
+  m_Layer: 0
+  m_Name: PerimeterExample
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1886855509
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1886855508}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 647d5cb138db4ae4e8d80909bb693dfa, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  cylinder: 0
+  rectangular: 0
+  triangular: 0
+  height: 0
+  patrolWidth: 0
+  chaseWidth: 0
+--- !u!4 &1886855510
+Transform:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1886855508}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 41.05, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 15
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &2093026700 stripped
 Transform:
   m_PrefabParentObject: {fileID: 4021269347909586, guid: 8a4db218638acca4785e03f77ea979dd,
