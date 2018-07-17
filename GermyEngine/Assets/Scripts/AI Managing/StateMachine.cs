@@ -2,11 +2,10 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class StateMachine : MonoBehaviour {
+public class StateMachine{
 
     private IState currentState;
     private IState previousState;
-
 
 	public void ChangeState(IState newState)
     {
@@ -16,6 +15,7 @@ public class StateMachine : MonoBehaviour {
         }
         this.previousState = this.currentState;
         this.currentState = newState;
+        this.currentState.Enter();
     }
 
     public void ExecuteStateUpdate()

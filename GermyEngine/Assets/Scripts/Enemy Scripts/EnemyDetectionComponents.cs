@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class EnemyAIManager : MonoBehaviour
+public class EnemyDetectionComponents : MonoBehaviour
 {
 
     /*
@@ -16,5 +16,12 @@ public class EnemyAIManager : MonoBehaviour
     public bool hasFOS;
     public bool hasCheckID;
     public bool activePatrol;
+
+    public float detectionRadius;
+    public float viewAngle;
+
+    public LayerMask SearchLayer;
+    public string SearchTag = "Player";
+
 
 }   

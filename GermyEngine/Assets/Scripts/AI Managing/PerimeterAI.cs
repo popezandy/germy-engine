@@ -204,8 +204,12 @@ public class PerimeterAI : MonoBehaviour
 
         for (int i = 0; i < interactingAgent.Length; i++)
         {
-            if (interactingAgent[i])
+            
+
+            if (interactingAgent[i] != null)
             {
+                interactingAgent[i].GetComponent<InfoBuffer>().PerimeterLocation = perimeterCenter.transform;
+
                 if (
                 interactingAgent[i].transform.position.x > patrolLeft.x &&
                 interactingAgent[i].transform.position.x < patrolRight.x &&
@@ -229,20 +233,22 @@ public class PerimeterAI : MonoBehaviour
                     interactingAgent[i].GetComponent<InfoBuffer>().PerimeterState = "chase";
                 }
                 else interactingAgent[i].GetComponent<InfoBuffer>().PerimeterState = "return";
-            }
-            if (
-                Player.transform.position.x > patrolLeft.x &&
-                Player.transform.position.x < patrolRight.x &&
-                Player.transform.position.z < patrolFront.z &&
-                Player.transform.position.z > patrolBack.z &&
-                Player.transform.position.y > perimeterCenter.transform.position.y &&
-                Player.transform.position.y < perimeterCenter.transform.position.y + height
-            ) {
-                interactingAgent[i].GetComponent<InfoBuffer>().playerInPatrolArea = true;
-            }
-            else
-            {
-                interactingAgent[i].GetComponent<InfoBuffer>().playerInPatrolArea = false;
+
+                if (
+                    Player.transform.position.x > patrolLeft.x &&
+                    Player.transform.position.x < patrolRight.x &&
+                    Player.transform.position.z < patrolFront.z &&
+                    Player.transform.position.z > patrolBack.z &&
+                    Player.transform.position.y > perimeterCenter.transform.position.y &&
+                    Player.transform.position.y < perimeterCenter.transform.position.y + height
+                )
+                {
+                    interactingAgent[i].GetComponent<InfoBuffer>().playerInPatrolArea = true;
+                }
+                else
+                {
+                    interactingAgent[i].GetComponent<InfoBuffer>().playerInPatrolArea = false;
+                }
             }
         }
         

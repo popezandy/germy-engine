@@ -21,10 +21,10 @@ GameObject:
   - component: {fileID: 4021269347909586}
   - component: {fileID: 33300336785634030}
   - component: {fileID: 23066390494062110}
-  - component: {fileID: 114588764886255602}
-  - component: {fileID: 114110349198680862}
-  - component: {fileID: 114835172792002612}
-  - component: {fileID: 114995159342139060}
+  - component: {fileID: 114420125025019894}
+  - component: {fileID: 114958982122103698}
+  - component: {fileID: 114454214935233260}
+  - component: {fileID: 195291583463064252}
   m_Layer: 9
   m_Name: GermyPrimitive
   m_TagString: Untagged
@@ -87,7 +87,7 @@ MeshFilter:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1755550142775582}
   m_Mesh: {fileID: 4300000, guid: 5e3776e9ddad4244b88576f1f1cc1f0a, type: 3}
---- !u!114 &114110349198680862
+--- !u!114 &114420125025019894
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
@@ -95,13 +95,20 @@ MonoBehaviour:
   m_GameObject: {fileID: 1755550142775582}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b62352660d862974184c6c5f1f19ba52, type: 3}
+  m_Script: {fileID: 11500000, guid: b9187a2cc02963f4f9866becca48e518, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxAngle: 30
-  maxRadius: 0
-  isInFOV: 0
---- !u!114 &114588764886255602
+  PerimeterState: 
+  PerimeterLocation: {fileID: 0}
+  PrioretyTarget: {fileID: 0}
+  playerInPatrolArea: 0
+  isHeld: 0
+  isHolding: 0
+  targetIsFollowable: 0
+  isNoisy: 0
+  isSmelly: 0
+  toggleDebug: 0
+--- !u!114 &114454214935233260
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
@@ -109,28 +116,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 1755550142775582}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 47811f6753675454d99ac736f74ba855, type: 3}
+  m_Script: {fileID: 11500000, guid: 596c8593f78519e4fb002c5a8000cdd9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxRot: 45
-  turnSpeed: 1
-  moveSpeed: 1
-  curveRotation: 0
-  playerObject: {fileID: 0}
---- !u!114 &114835172792002612
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1755550142775582}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: db12a359cb0c98a458682592adbae5f1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  maxRadius: 10
-  isInFOH: 0
---- !u!114 &114995159342139060
+  perimeterState: 
+--- !u!114 &114958982122103698
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
@@ -146,3 +136,30 @@ MonoBehaviour:
   hasFOS: 0
   hasCheckID: 0
   activePatrol: 0
+  detectionRadius: 20
+  viewAngle: 20
+  SearchLayer:
+    serializedVersion: 2
+    m_Bits: 256
+  SearchTag: Player
+--- !u!195 &195291583463064252
+NavMeshAgent:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1755550142775582}
+  m_Enabled: 1
+  m_AgentTypeID: 0
+  m_Radius: 1
+  m_Speed: 3.5
+  m_Acceleration: 8
+  avoidancePriority: 50
+  m_AngularSpeed: 120
+  m_StoppingDistance: 0
+  m_AutoTraverseOffMeshLink: 1
+  m_AutoBraking: 1
+  m_AutoRepath: 1
+  m_Height: 2.5
+  m_BaseOffset: 2.25
+  m_WalkableMask: 4294967295
+  m_ObstacleAvoidanceType: 4

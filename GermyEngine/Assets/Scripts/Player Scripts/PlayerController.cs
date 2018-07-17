@@ -106,6 +106,7 @@ public class PlayerController : MonoBehaviour
     {
         if (!disableControl)
         {
+            
             isBoostingCheck();
             isWalkingCheck();
             SneakCheck();
@@ -116,6 +117,7 @@ public class PlayerController : MonoBehaviour
             GroundChecking();
             CollisionCheck();
             PickUp();
+            setDynamicReferences();
         }
 
         else if (isBoosting)
@@ -143,6 +145,11 @@ public class PlayerController : MonoBehaviour
 
     #endregion
 
+    private void setDynamicReferences()
+    {
+        this.GetComponent<InfoBuffer>().isNoisy = !isSneaking; 
+    }
+
     #region Movement Basic
 
     private void SimpleMove()
@@ -168,7 +175,7 @@ public class PlayerController : MonoBehaviour
 
     private void isWalkingCheck()
     {
-        if (Input.GetAxis("Horizontal") != 0 || Input.GetAxis("Vertical") != 0)
+        if (Input.GetAxis("Vertical") != 0)
         {
             isWalking = true;
         }
@@ -200,7 +207,7 @@ public class PlayerController : MonoBehaviour
         {
             if (grounded)
             {
-                if (Input.GetAxis("Horizontal") != 0 || Input.GetAxis("Vertical") != 0)
+                if (Input.GetAxis("Vertical") != 0)
                 {
                     isSneakWalking = true;
                 }
@@ -429,7 +436,10 @@ public class PlayerController : MonoBehaviour
 
             grabObject = hit.transform.gameObject;
 
+            grabObject.GetComponent<InfoBuffer>().isHeld = true;
+
             isHolding = true;
+            this.GetComponent<InfoBuffer>().isHolding = true;
 
         }
 
@@ -491,7 +501,7 @@ public class PlayerController : MonoBehaviour
             grabObject.transform.LookAt(new Vector3(this.transform.position.x, grabObject.transform.position.y, this.transform.position.z));
             grabObject.transform.Rotate(0, -90, 0);
 
-            print("Case 1 bitch you got it right bitch!");
+            print("Pick Up Two Handed Object");
             grabTargetLeft = grabObject.GetComponent<ObjectGrabbable>().leftHandle.position;
             grabTargetRight = grabObject.GetComponent<ObjectGrabbable>().rightHandle.position;
         }
@@ -548,6 +558,7 @@ public class PlayerController : MonoBehaviour
             LE.position = new Vector3(leftShoulder.position.x, transform.position.y + 2.5f, leftShoulder.position.z);
             RE.position = grabObject.GetComponent<ObjectGrabbable>().rightHandle.position;
             isHeldOverhead = true;
+            
         }
         else return;
 
@@ -562,10 +573,16 @@ public class PlayerController : MonoBehaviour
         float bodyFromGround = 0.5f-(playerHeight / 2);
         float setInFrontDist = 1.5f;
         Vector3 dropPoint = transform.TransformPoint(0, bodyFromGround, setInFrontDist);
+
         grabObject.transform.SetParent(null);
         grabObject.transform.position = dropPoint;
+        grabObject.GetComponent<InfoBuffer>().isHeld = false;
         grabObject = null;
+
         isHolding = false;
+        this.GetComponent<InfoBuffer>().isHolding = false;
+        
+
         isHeldOverhead = false;
     }
     #endregion // to do

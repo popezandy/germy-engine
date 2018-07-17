@@ -26,14 +26,14 @@ public class SearchFor : IState
 
     public void Enter()
     {
-
+        Debug.Log("Entered SearchFor State;");
     }
 
     public void Execute()
     {
         if (!SearchCompleted)
         {
-            var hitObjects = Physics.OverlapSphere(this.OwnerGameObject.transform.position, SearchRadius);
+            var hitObjects = Physics.OverlapSphere(this.OwnerGameObject.transform.position, SearchRadius, SearchLayer);
             var allObjectsWithRequiredTag = new List<Collider>();
 
             for (int i = 0; i < hitObjects.Length; i++)
@@ -70,7 +70,6 @@ public class SearchResults
         this.AllHitObjectsInSearchRadius = allHitObjectsInSearchRadius;
         this.AllHitObjectsWithRequiredTag = allHitObjectsWithRequiredTag;
 
-        // method calls for processing data further (closest object, farthest object, etc)
     }
 
 }

@@ -54,9 +54,10 @@ public class CalfBehavior : MonoBehaviour {
     */
     #endregion
 
-    #region Variables
+    #region Static Variables
 
     private StateMachine stateMachine = new StateMachine();
+
     [SerializeField]
     private LayerMask lureLayer;
     [SerializeField]
@@ -66,6 +67,22 @@ public class CalfBehavior : MonoBehaviour {
 
     private NavMeshAgent navMeshAgent;
 
+    private Collider closestLure;
+
+    #endregion
+
+    #region Dynamic Variables
+
+    private bool isHeld;
+    private bool followableCheck = true;
+
+    #endregion
+
+
+
+
+    #region CallBacks
+
     private void Start()
     {
         this.navMeshAgent = this.GetComponent<NavMeshAgent>();
@@ -74,16 +91,76 @@ public class CalfBehavior : MonoBehaviour {
 
     private void Update()
     {
-        this.stateMachine.ExecuteStateUpdate();
-    }
 
-    public void LureFound(SearchResults searchResults)
-    {
-        var foundLures = searchResults.AllHitObjectsWithRequiredTag;
-        //choose which object to approach
+        SetDynamicVariables();
+
+        if (!isHeld)
+        {
+            ChooseCurrentIState();
+
+            this.navMeshAgent.enabled = true;
+
+            this.stateMachine.ExecuteStateUpdate();
+
+        }
+
+        if (isHeld)
+        {
+            this.navMeshAgent.enabled = false;
+        }
+
     }
 
     #endregion
 
+    #region Behavior Processing
+
+    public void LureFound(SearchResults searchResults)
+    {
+        var foundLures = searchResults.AllHitObjectsWithRequiredTag;
+
+        for (int i = 0; i < foundLures.Count; i++)
+        {
+            if (closestLure == null)
+            {
+                closestLure = foundLures[i];
+            }
+
+            if (closestLure != null && Vector3.Distance(this.transform.position, foundLures[i].transform.position) < Vector3.Distance(this.transform.position, closestLure.transform.position))
+            {
+                closestLure = foundLures[i];
+            }
+        }
+    }
+
+    private void SetDynamicVariables()
+    {
+        isHeld = this.GetComponent<InfoBuffer>().isHeld;
+        followableCheck = this.GetComponent<InfoBuffer>().targetIsFollowable;
+    }
+
+
+    private void ChooseCurrentIState()
+    {
+        if (closestLure == null)
+        {
+            this.stateMachine.ChangeState(new SearchFor(this.lureLayer, this.gameObject, this.viewRange, this.lureItemsTag, this.LureFound));
+        }
+        else
+        {
+            this.GetComponent<InfoBuffer>().targetIsFollowable = true;
+            this.stateMachine.ChangeState(new Follow(this.gameObject, closestLure.transform, viewRange, this.navMeshAgent));
+
+            if (!followableCheck)
+            {
+                closestLure = null;
+            }
+        }
+
+    }
+
+
+
+#endregion
 
 }
