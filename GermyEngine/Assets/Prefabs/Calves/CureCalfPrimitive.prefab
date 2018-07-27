@@ -114,7 +114,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1092498639283730}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 42.51854, y: 0.55, z: 14.8}
+  m_LocalPosition: {x: 8.195932, y: -1.5, z: -26.034563}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4737707038772826}
@@ -266,10 +266,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   PerimeterState: 
   PerimeterLocation: {fileID: 0}
+  PrioretyTarget: {fileID: 0}
   playerInPatrolArea: 0
   isHeld: 0
   isHolding: 0
   targetIsFollowable: 0
+  isNoisy: 0
+  isSmelly: 0
   toggleDebug: 0
 --- !u!136 &136306230139335442
 CapsuleCollider:
@@ -279,7 +282,7 @@ CapsuleCollider:
   m_GameObject: {fileID: 1092498639283730}
   m_Material: {fileID: 0}
   m_IsTrigger: 0
-  m_Enabled: 0
+  m_Enabled: 1
   m_Radius: 0.54
   m_Height: 1.87
   m_Direction: 2

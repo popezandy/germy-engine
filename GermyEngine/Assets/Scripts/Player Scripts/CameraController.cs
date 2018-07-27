@@ -173,7 +173,7 @@ public class CameraController : MonoBehaviour {
 
         }
 
-        if (!target.GetComponent<PlayerController>().disableControl)
+        if (!target.GetComponent<InfoBuffer>().disableControl)
         {
             
             transform.eulerAngles = currentRotation;

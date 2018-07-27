@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerController : MonoBehaviour
+public class PlayerRB : MonoBehaviour
 {
     #region Class Description
 
@@ -42,9 +42,6 @@ public class PlayerController : MonoBehaviour
     public float jumpSpeed;
     public float jumpDecrease;
     public float incrementJumpFallSpeed = 0.1f;
-
-    [Header("Gravity")]
-    public float gravity = 2.5f;
 
     [Header("Layer Masks")]
     public LayerMask discludePlayer;
@@ -93,29 +90,31 @@ public class PlayerController : MonoBehaviour
     private float boostMaxTime = 3.0f;
     private float boostCountdown;
     private bool isSneakWalking = false;
+    private Rigidbody rigidBody = new Rigidbody();
 
     #endregion
 
     #region Callbacks
 
-    private void Awake()
+    private void Start()
     {
+        rigidBody = this.GetComponent<Rigidbody>();
     }
 
     private void Update()
     {
         if (!disableControl)
         {
-            
+
             isBoostingCheck();
             isWalkingCheck();
             SneakCheck();
-            Gravity();
+            //Gravity();
             SimpleMove();
             Jump();
             FinalMove();
             GroundChecking();
-            CollisionCheck();
+            //CollisionCheck();
             PickUp();
             setDynamicReferences();
         }
@@ -157,7 +156,7 @@ public class PlayerController : MonoBehaviour
 
     private void SimpleMove()
     {
-        move = Vector3.ClampMagnitude(new Vector3( 0, 0, Input.GetAxis("Vertical")), 1);
+        move = Vector3.ClampMagnitude(new Vector3(0, 0, Input.GetAxis("Vertical")), 1);
         transform.Rotate(0, Input.GetAxis("Horizontal") * turnSpeed * Time.deltaTime, 0);
         velocity += move;
     }
@@ -206,7 +205,7 @@ public class PlayerController : MonoBehaviour
             movementSpeed = trueMove;
         }
 
-        if (isSneaking) 
+        if (isSneaking)
         {
             if (grounded)
             {
@@ -224,7 +223,7 @@ public class PlayerController : MonoBehaviour
                 isSneakWalking = false;
             }
 
-            }
+        }
         else { isSneakWalking = false; }
 
     }
@@ -232,26 +231,11 @@ public class PlayerController : MonoBehaviour
     #endregion
 
     #region Gravity/Grounding
-    //Gravity Private Variables
+    
     private bool grounded;
-    //private float currentGravity = 0;
-
-
     private Vector3 liftPoint = new Vector3(0, 0, 0);
     private RaycastHit groundHit;
     private Vector3 groundCheckPoint = new Vector3(0, -0.87f, 0);
-
-    private void Gravity()
-    {
-        if (grounded == false)
-        {
-            velocity.y -= gravity;
-        }
-        else
-        {
-            //			currentGravity = 0;
-        }
-    }
 
     private void GroundChecking()
     {
@@ -371,21 +355,16 @@ public class PlayerController : MonoBehaviour
             if (Input.GetKeyDown(KeyCode.Space))
             {
                 inputJump = true;
-                transform.position += Vector3.up * 0.6f;
-                jumpHeight += jumpForce;
+                rigidBody.AddForce(this.transform.up * jumpForce, ForceMode.Impulse);
                 isSneaking = false;
             }
         }
         else
         {
-            if (!grounded)
-            {
-                jumpHeight -= (jumpHeight * jumpDecrease * Time.deltaTime) + fallMultiplier * Time.deltaTime;
-                fallMultiplier += incrementJumpFallSpeed;
-            }
+            
         }
 
-        velocity.y += jumpHeight;
+        
     }
 
     #endregion
@@ -561,7 +540,7 @@ public class PlayerController : MonoBehaviour
             LE.position = new Vector3(leftShoulder.position.x, transform.position.y + 2.5f, leftShoulder.position.z);
             RE.position = grabObject.GetComponent<ObjectGrabbable>().rightHandle.position;
             isHeldOverhead = true;
-            
+
         }
         else return;
 
@@ -573,7 +552,7 @@ public class PlayerController : MonoBehaviour
 
     private void Drop()
     {
-        float bodyFromGround = 0.5f-(playerHeight / 2);
+        float bodyFromGround = 0.5f - (playerHeight / 2);
         float setInFrontDist = 1.5f;
         Vector3 dropPoint = transform.TransformPoint(0, bodyFromGround, setInFrontDist);
 
@@ -584,7 +563,7 @@ public class PlayerController : MonoBehaviour
 
         isHolding = false;
         this.GetComponent<InfoBuffer>().isHolding = false;
-        
+
 
         isHeldOverhead = false;
 
@@ -654,7 +633,7 @@ public class PlayerController : MonoBehaviour
 
     #region Disable Control
 
-   private void disableControlCheck()
+    private void disableControlCheck()
     {
         if (isBoosting || isInCover) { disableControl = true; }
         else { disableControl = false; }

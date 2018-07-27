@@ -10,8 +10,13 @@ public class InfoBuffer : MonoBehaviour
     public Collider PrioretyTarget;
 
     public bool playerInPatrolArea;
+
     public bool isHeld;
     public bool isHolding;
+    public bool isHeldOverhead;
+
+    public bool disableControl;
+
     public bool targetIsFollowable;
 
     public bool isNoisy;
@@ -19,4 +24,9 @@ public class InfoBuffer : MonoBehaviour
 
     public bool toggleDebug;
 
+    public GameObject grabObject;
+
+    //CoverSystem
+
+    public bool isInCover;
 }
