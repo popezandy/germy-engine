@@ -29,4 +29,5 @@ public class InfoBuffer : MonoBehaviour
     //CoverSystem
 
     public bool isInCover;
+    public bool isGrounded;
 }

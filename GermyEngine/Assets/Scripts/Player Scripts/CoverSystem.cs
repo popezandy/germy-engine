@@ -37,9 +37,9 @@ namespace Player {
 
         public void InitiateCoverSystem() {
 
-            isInCover = gameObject.GetComponent<PlayerController>().isInCover;
-            coverMask = gameObject.GetComponent<PlayerController>().isGrabbable;
-            grabRange = gameObject.GetComponent<PlayerController>().grabRange;
+            isInCover = gameObject.GetComponent<InfoBuffer>().isInCover;
+            coverMask = gameObject.GetComponent<PlayerSettings>().isGrabbable;
+            grabRange = gameObject.GetComponent<PlayerSettings>().grabRange;
 
             if (Input.GetButton("sneak"))
             {
@@ -85,11 +85,16 @@ namespace Player {
 
                 RaycastHit leftHit = new RaycastHit();
                 RaycastHit rightHit = new RaycastHit();
+                
 
                 if (Physics.Raycast(leftRay, out leftHit, checkerDistanceBuffer, coverMask) || Physics.Raycast(rightRay, out rightHit, checkerDistanceBuffer, coverMask))
                     {
+                    
                     if (leftHit.normal == checkerNormalBuffer || rightHit.normal == checkerNormalBuffer)
-                    gameObject.GetComponent<PlayerController>().isInCover = true;
+                        Debug.Log("check is happening");
+
+                    gameObject.GetComponent<InfoBuffer>().isInCover = true;
+                    isInCover = true;
                     tempPosition = tempHit.point;
                     snapOrientation = tempHit.normal;
                 }
@@ -139,22 +144,17 @@ namespace Player {
         {
             if (Input.GetButton("Jump"))
             {
-                gameObject.GetComponent<PlayerController>().isInCover = false;
+                gameObject.GetComponent<InfoBuffer>().isInCover = false;
             }
                 
         }
 
         private void CheckForGround()
         {
-            Ray ray = new Ray(transform.position, -transform.up);
-            RaycastHit tempHit = new RaycastHit();
-            if (Physics.Raycast(ray, out tempHit, 3.0f))
+            if (!this.GetComponent<InfoBuffer>().isGrounded)
             {
-                float playerHeight = gameObject.GetComponent<PlayerController>().playerHeight;
-                if (tempHit.distance > playerHeight/2)
-                {
-                    gameObject.GetComponent<PlayerController>().isInCover = false;
-                }
+                gameObject.GetComponent<InfoBuffer>().isInCover = false;
+                Debug.Log("something's wrong with checkGround");
             }
         }
         /* If the player is holding sneak, and they approach a wall with

@@ -7,6 +7,7 @@ public class PlayerSettings : MonoBehaviour {
 
     public LayerMask isGrabbable;
     public float grabRange;
+    public float playerHeight;
 
     private void Start()
     {

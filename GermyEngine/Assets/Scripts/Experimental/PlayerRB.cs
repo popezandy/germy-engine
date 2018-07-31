@@ -39,16 +39,21 @@ public class PlayerRB : MonoBehaviour
 
     [Header("Jump Options")]
     public float jumpForce;
-    public float jumpSpeed;
-    public float jumpDecrease;
-    public float incrementJumpFallSpeed = 0.1f;
+    public float fallMultiplier = 2.5f;
+    public float lowJumpMultiplier = 2.0f;
+
+    bool jumpRequest;
+    private bool inputJump = false;
+
+    public float maxCount = 0.5f;
+    float counter = 0f;
+
 
     [Header("Layer Masks")]
     public LayerMask discludePlayer;
     public LayerMask isGrabbable;
 
     [Header("References")]
-    public SphereCollider sphereCol;
 
     public Transform leftShoulder;
     public Transform rightShoulder;
@@ -105,7 +110,6 @@ public class PlayerRB : MonoBehaviour
     {
         if (!disableControl)
         {
-
             isBoostingCheck();
             isWalkingCheck();
             SneakCheck();
@@ -140,6 +144,25 @@ public class PlayerRB : MonoBehaviour
         }
 
         disableControlCheck();
+        CountDown();
+    }
+
+    private void FixedUpdate()
+    {
+        if (jumpRequest)
+        {
+            rigidBody.AddForce(this.transform.up * jumpForce, ForceMode.Impulse);
+            jumpRequest = false;
+        }
+
+        if (rigidBody.velocity.y < 0 && !grounded)
+        {
+            rigidBody.velocity += transform.up * Physics.gravity.y * (fallMultiplier - 1) * Time.deltaTime * -1;
+        }
+        else if (rigidBody.velocity.y > 0 && Input.GetKey(KeyCode.Space))
+        {
+            rigidBody.velocity += transform.up * Physics.gravity.y * (lowJumpMultiplier - 1) * Time.deltaTime * -1 * counter;
+        }
     }
 
     #endregion
@@ -148,6 +171,7 @@ public class PlayerRB : MonoBehaviour
     {
         this.GetComponent<InfoBuffer>().isNoisy = !isSneaking;
         this.GetComponent<InfoBuffer>().isInCover = isInCover;
+        this.GetComponent<InfoBuffer>().isGrounded = grounded;
         this.GetComponent<PlayerSettings>().isGrabbable = isGrabbable;
         this.GetComponent<PlayerSettings>().grabRange = grabRange;
     }
@@ -230,7 +254,7 @@ public class PlayerRB : MonoBehaviour
 
     #endregion
 
-    #region Gravity/Grounding
+    #region Grounding
     
     private bool grounded;
     private Vector3 liftPoint = new Vector3(0, 0, 0);
@@ -267,21 +291,6 @@ public class PlayerRB : MonoBehaviour
             {
                 groundHit = tempHit;
                 grounded = true;
-
-                if (inputJump == false)
-                {
-                    if (!smooth)
-                    {
-                        transform.position = new Vector3(transform.position.x, (groundHit.point.y + playerHeight / 2), transform.position.z);
-                    }
-                    else
-                    {
-                        transform.position = Vector3.Lerp(transform.position, new Vector3(transform.position.x, (groundHit.point.y + playerHeight / 2), transform.position.z), smoothSpeed * Time.deltaTime);
-                    }
-                }
-
-                break;
-
             }
         }
 
@@ -306,66 +315,41 @@ public class PlayerRB : MonoBehaviour
     }
     #endregion
 
-    #region Collision
-
-    private void CollisionCheck()
-    {
-        Collider[] overlaps = new Collider[4];
-        int num = Physics.OverlapSphereNonAlloc(transform.TransformPoint(sphereCol.center), sphereCol.radius, overlaps, discludePlayer, QueryTriggerInteraction.UseGlobal);
-
-        for (int i = 0; i < num; i++)
-        {
-            Transform t = overlaps[i].transform;
-            Vector3 dir;
-            float dist;
-
-            if (Physics.ComputePenetration(sphereCol, transform.position, transform.rotation, overlaps[i], t.position, t.rotation, out dir, out dist))
-            {
-                Vector3 penetrationVector = dir * dist;
-                Vector3 velocityProjected = Vector3.Project(velocity, -dir);
-                transform.position = transform.position + penetrationVector;
-                colVelocity -= velocityProjected;
-            }
-        }
-    }
-    #endregion
-
     #region Jumping
-
-    private float jumpHeight = 0;
-    private bool inputJump = false;
-
-    private float fallMultiplier = -1;
 
     private void Jump()
     {
-        bool canJump = false;
-
-        canJump = !Physics.Raycast(new Ray(transform.position, Vector3.up), playerHeight, discludePlayer);
-
-        if (grounded && jumpHeight > 0.2f || jumpHeight <= 0.2f && grounded)
+        if (grounded)
         {
-            jumpHeight = 0;
-            inputJump = false;
-            fallMultiplier = -1;
-        }
-
-        if (grounded && canJump)
-        {
-            if (Input.GetKeyDown(KeyCode.Space))
+            if (Input.GetKeyDown(KeyCode.Space) && !this.GetComponent<InfoBuffer>().isHolding)
             {
+                jumpRequest = true;
                 inputJump = true;
-                rigidBody.AddForce(this.transform.up * jumpForce, ForceMode.Impulse);
+                
                 isSneaking = false;
+                counter = maxCount;
+            }
+            else if (Input.GetKeyDown(KeyCode.Space) && this.GetComponent<InfoBuffer>().isHolding)
+            {
+                jumpRequest = true;
+                inputJump = true;
+
+                isSneaking = false;
+                counter = maxCount * .75f;
             }
         }
-        else
-        {
-            
-        }
-
         
+
     }
+
+    private void CountDown()
+    {
+        if (counter > 0)
+        {
+            counter -= Time.deltaTime;
+        }
+    }
+
 
     #endregion
 
@@ -392,7 +376,7 @@ public class PlayerRB : MonoBehaviour
                 }
                 else return;
             }
-            else if (isHolding)
+            else if (isHolding&&grounded)
             {
                 Drop();
             }
@@ -630,12 +614,11 @@ public class PlayerRB : MonoBehaviour
     */
     #endregion
     //todo
-
     #region Disable Control
 
     private void disableControlCheck()
     {
-        if (isBoosting || isInCover) { disableControl = true; }
+        if (isBoosting || this.GetComponent<InfoBuffer>().isInCover) { disableControl = true; }
         else { disableControl = false; }
     }
 
