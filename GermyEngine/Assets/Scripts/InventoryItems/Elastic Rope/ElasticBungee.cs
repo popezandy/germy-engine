@@ -2,7 +2,10 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class FollowLine : MonoBehaviour
+[RequireComponent(typeof(Rigidbody))]
+[RequireComponent(typeof(LineRenderer))]
+[RequireComponent(typeof(SpringJoint))]
+public class ElasticBungee : MonoBehaviour
 {
 
     LineRenderer lineRenderer = new LineRenderer();
@@ -24,6 +27,8 @@ public class FollowLine : MonoBehaviour
         lineRenderer = this.GetComponent<LineRenderer>();
         rigidBody = this.GetComponent<Rigidbody>();
         springJoint = this.GetComponent<SpringJoint>();
+        springJoint.autoConfigureConnectedAnchor = false;
+        springJoint.enablePreprocessing = false;
 
         ethanCenterMass = new Vector3(this.transform.position.x, this.transform.position.y /*+ 0.8f*/, this.transform.position.z);
 
