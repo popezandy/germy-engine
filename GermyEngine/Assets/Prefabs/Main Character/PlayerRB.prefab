@@ -385,10 +385,11 @@ GameObject:
   - component: {fileID: 135841995682766162}
   - component: {fileID: 54517240494088692}
   - component: {fileID: 114134586525447088}
-  - component: {fileID: 114422667569642478}
-  - component: {fileID: 114629604355283106}
   - component: {fileID: 114545957695295768}
   - component: {fileID: 114382577190079290}
+  - component: {fileID: 114422667569642478}
+  - component: {fileID: 114629604355283106}
+  - component: {fileID: 114827555388176570}
   m_Layer: 8
   m_Name: PlayerRB
   m_TagString: Player
@@ -645,7 +646,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1983024906440880}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 7.8, y: 0, z: -34.5}
+  m_LocalPosition: {x: -15.150915, y: 39.1, z: -14.555607}
   m_LocalScale: {x: 1, y: 1.5, z: 1}
   m_Children:
   - {fileID: 4176961092939686}
@@ -1338,12 +1339,15 @@ MonoBehaviour:
   isHolding: 0
   isHeldOverhead: 0
   disableControl: 0
+  boostEnabled: 0
   targetIsFollowable: 0
   isNoisy: 0
   isSmelly: 0
   toggleDebug: 0
   grabObject: {fileID: 0}
   isInCover: 0
+  isGrounded: 0
+  lastplaceGrounded: {x: 0, y: 0, z: 0}
 --- !u!114 &114173309161422370
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1397,7 +1401,9 @@ MonoBehaviour:
   isGrabbable:
     serializedVersion: 2
     m_Bits: 0
-  grabRange: 0
+  grabRange: 5
+  playerHeight: 3
+  boostSpeed: 20
 --- !u!114 &114422667569642478
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1415,17 +1421,16 @@ MonoBehaviour:
   turnSpeed: 250
   smooth: 0
   smoothSpeed: 0
-  jumpForce: 15
-  jumpSpeed: 1
-  jumpDecrease: 7
-  incrementJumpFallSpeed: 1
+  jumpForce: 5
+  fallMultiplier: -1
+  lowJumpMultiplier: 2
+  maxCount: 1
   discludePlayer:
     serializedVersion: 2
     m_Bits: 4294967039
   isGrabbable:
     serializedVersion: 2
     m_Bits: 3072
-  sphereCol: {fileID: 135841995682766162}
   leftShoulder: {fileID: 4095813636167662}
   rightShoulder: {fileID: 4523702985488742}
   leftHand: {fileID: 4400477660054116}
@@ -1487,8 +1492,25 @@ MonoBehaviour:
   spaceFromWall: 0.7
   wallBuffer: 1
   wallMoveSpeed: 3
-  minimumThickness: 1
+  minimumThickness: 0.5
   crouchAmount: 0.55
+--- !u!114 &114827555388176570
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1983024906440880}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cf0a27ad4a72eb7459dd2848767ced0d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ground:
+    serializedVersion: 2
+    m_Bits: 7735
+  maxTime: 3
+  maxDistance: 15
+  minDistance: 0.3
 --- !u!114 &114948200020561362
 MonoBehaviour:
   m_ObjectHideFlags: 1

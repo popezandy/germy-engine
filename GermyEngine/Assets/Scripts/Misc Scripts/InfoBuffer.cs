@@ -16,6 +16,8 @@ public class InfoBuffer : MonoBehaviour
     public bool isHeldOverhead;
 
     public bool disableControl;
+    public bool boostEnabled;
+    public bool isBoosting;
 
     public bool targetIsFollowable;
 
@@ -30,4 +32,6 @@ public class InfoBuffer : MonoBehaviour
 
     public bool isInCover;
     public bool isGrounded;
+
+    public Vector3 lastplaceGrounded;
 }

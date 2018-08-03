@@ -110,6 +110,7 @@ public class PlayerRB : MonoBehaviour
     {
         if (!disableControl)
         {
+            detectGroundSwitch();
             isBoostingCheck();
             isWalkingCheck();
             SneakCheck();
@@ -174,6 +175,7 @@ public class PlayerRB : MonoBehaviour
         this.GetComponent<InfoBuffer>().isGrounded = grounded;
         this.GetComponent<PlayerSettings>().isGrabbable = isGrabbable;
         this.GetComponent<PlayerSettings>().grabRange = grabRange;
+        isBoosting = this.GetComponent<InfoBuffer>().isBoosting;
     }
 
     #region Movement Basic
@@ -624,5 +626,11 @@ public class PlayerRB : MonoBehaviour
 
     #endregion
 
-
+    private void detectGroundSwitch()
+    {
+        if (this.GetComponent<InfoBuffer>().isGrounded == true)
+        {
+            this.GetComponent<InfoBuffer>().lastplaceGrounded = this.transform.position;
+        }
+    }
 }
