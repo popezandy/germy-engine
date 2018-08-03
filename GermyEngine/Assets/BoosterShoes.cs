@@ -52,6 +52,7 @@ public class BoosterShoes : MonoBehaviour {
         {
             BoostCancel();
         }
+        this.GetComponent<InfoBuffer>().isBoosting = isBoosting;
     }
 
     private void Countdown()
@@ -69,14 +70,6 @@ public class BoosterShoes : MonoBehaviour {
                     isBoosting = true;
                     yTransformBuffer = this.transform.position.y;
                 }
-                if (hit.distance <= maxDistance)
-                {
-                    deathFall = false;
-                }
-            }
-            else
-            {
-                deathFall = true;
             }
         }
     }
@@ -91,6 +84,21 @@ public class BoosterShoes : MonoBehaviour {
 
     public void StopBoost()
     {
+        RaycastHit hit = new RaycastHit();
+
+        if (Physics.Raycast(this.transform.position, Vector3.down, maxDistance+1, ground, QueryTriggerInteraction.Ignore))
+        {
+            if (hit.distance > maxDistance)
+            { deathFall = true; }
+            else
+            { deathFall = false; }
+        }
+        else
+        {
+            deathFall = true;
+        }
+            
+
         if (deathFall)
         {
             //deathAnimation

@@ -42,6 +42,7 @@ public class PlayerRB : MonoBehaviour
     public float fallMultiplier = 2.5f;
     public float lowJumpMultiplier = 2.0f;
 
+
     bool jumpRequest;
     private bool inputJump = false;
 
@@ -91,9 +92,8 @@ public class PlayerRB : MonoBehaviour
 
     //Experimental or Unimplemented Variables
     private bool isBoosting;
-    private float boostSpeed = 2.5f;
-    private float boostMaxTime = 3.0f;
-    private float boostCountdown;
+    public float maxGroundBufferTime = 2;
+
     private bool isSneakWalking = false;
     private Rigidbody rigidBody = new Rigidbody();
 
@@ -104,6 +104,7 @@ public class PlayerRB : MonoBehaviour
     private void Start()
     {
         rigidBody = this.GetComponent<Rigidbody>();
+        this.GetComponent<InfoBuffer>().lastplaceGrounded = this.transform.position;
     }
 
     private void Update()
@@ -111,7 +112,6 @@ public class PlayerRB : MonoBehaviour
         if (!disableControl)
         {
             detectGroundSwitch();
-            isBoostingCheck();
             isWalkingCheck();
             SneakCheck();
             //Gravity();
@@ -123,10 +123,9 @@ public class PlayerRB : MonoBehaviour
             PickUp();
             setDynamicReferences();
         }
-
-        else if (isBoosting)
+        if (isBoosting)
         {
-            BoostFunctions();
+            BoostMode();
         }
 
         if (isSneakWalking)
@@ -144,9 +143,21 @@ public class PlayerRB : MonoBehaviour
             Drop();
         }
 
+        setDynamicReferences();
         disableControlCheck();
         CountDown();
     }
+
+
+    private void BoostMode()
+    {
+        detectGroundSwitch();
+        isWalkingCheck();
+        SimpleMove();
+        FinalMove();
+        GroundChecking();
+    }
+
 
     private void FixedUpdate()
     {
@@ -327,7 +338,7 @@ public class PlayerRB : MonoBehaviour
             {
                 jumpRequest = true;
                 inputJump = true;
-                
+
                 isSneaking = false;
                 counter = maxCount;
             }
@@ -340,8 +351,6 @@ public class PlayerRB : MonoBehaviour
                 counter = maxCount * .75f;
             }
         }
-        
-
     }
 
     private void CountDown()
@@ -557,27 +566,6 @@ public class PlayerRB : MonoBehaviour
     #endregion // to do
     //beta
 
-    #region Boost Functions
-
-    private void isBoostingCheck()
-    {
-        /*if boost button has been pressed in the last MaxBoostTime seconds & player is able to boost, isBoosting = true
-         * 
-         */
-    }
-
-    private void BoostFunctions()
-    {
-        /*Gravity works unless the player leaves the ground.
-         * PlayerSpeed = PlayerSpeed*BoostSpeed
-         * if isBoosting = true and MaxBoostTime < timesincelastboostpress
-         * run fall check. if distance > fallthreshold, deathanimation.
-         */
-    }
-
-    #endregion
-    // todo
-
     #region Cover System
     /* Cover System will be utilized in another script. The basic form
      * of the cover system will look like the following:
@@ -625,12 +613,18 @@ public class PlayerRB : MonoBehaviour
     }
 
     #endregion
+    private float time;
 
     private void detectGroundSwitch()
     {
-        if (this.GetComponent<InfoBuffer>().isGrounded == true)
+        time += Time.deltaTime;
+        if (time > maxGroundBufferTime)
         {
-            this.GetComponent<InfoBuffer>().lastplaceGrounded = this.transform.position;
+            if (this.GetComponent<InfoBuffer>().isGrounded == true)
+            {
+                this.GetComponent<InfoBuffer>().lastplaceGrounded = this.transform.position;
+            }
+            time = 0;
         }
     }
 }

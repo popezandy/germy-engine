@@ -1339,7 +1339,8 @@ MonoBehaviour:
   isHolding: 0
   isHeldOverhead: 0
   disableControl: 0
-  boostEnabled: 0
+  boostEnabled: 1
+  isBoosting: 0
   targetIsFollowable: 0
   isNoisy: 0
   isSmelly: 0
@@ -1443,6 +1444,7 @@ MonoBehaviour:
   isInCover: 0
   disableControl: 0
   disableInput: 0
+  maxGroundBufferTime: 3
 --- !u!114 &114453961046120320
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1510,7 +1512,7 @@ MonoBehaviour:
     m_Bits: 7735
   maxTime: 3
   maxDistance: 15
-  minDistance: 0.3
+  minDistance: 0.02
 --- !u!114 &114948200020561362
 MonoBehaviour:
   m_ObjectHideFlags: 1
