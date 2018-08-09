@@ -6,28 +6,21 @@ public class PlayerRB : MonoBehaviour
 {
     #region Class Description
 
-    /*Lorem ipsum parmitsum canipsum waginger the blinger faninginer shplanininer*/
+    /*Player Controller script that uses a Rigid Body for physics calculations. 
+     Requires InfoBuffer, PlayerSettings,BoosterShoes,CoverSystem*/
 
     #endregion
 
     #region ToDo
 
     /* Desired Script Traits-
-     * 1. Boosting with 3 second no gravity time, a check for ground below, fall animation if no ground
-     * 2. #Walking#, Boosting!!, #Sneaking#
-     * 3. #Picking up and putting down goal item#
-     * 4. Self turning with arrow keys*
-     * 5. Camera turning with Q and E*
-     * 6. Wall hugging!!!###
+     * Currently implementing inventory system
     */
 
     #endregion
 
     #region Variables
 
-    [Header("Player Options")]
-    public float playerHeight = 2f;
-    public float grabRange;
 
     [Header("Movement Options")]
 
@@ -97,18 +90,36 @@ public class PlayerRB : MonoBehaviour
     private bool isSneakWalking = false;
     private Rigidbody rigidBody = new Rigidbody();
 
+
+    private float playerHeight;
+    private float grabRange;
+
+    public GameObject leftObject;
+    public GameObject rightObject;
+    public GameObject freeHand;
+
+
+
+    [Header("Inventory")]
+    public Inventory inventory;
+    public InfoBuffer infoBuffer;
+
     #endregion
 
     #region Callbacks
 
     private void Start()
     {
+        infoBuffer = this.GetComponent<InfoBuffer>();
+        colorBuffer = GetComponent<Renderer>().material.color;
         rigidBody = this.GetComponent<Rigidbody>();
         this.GetComponent<InfoBuffer>().lastplaceGrounded = this.transform.position;
+        breathOvertime += breathTime;
     }
 
     private void Update()
     {
+        GulpCheck();
         if (!disableControl)
         {
             detectGroundSwitch();
@@ -122,6 +133,7 @@ public class PlayerRB : MonoBehaviour
             //CollisionCheck();
             PickUp();
             setDynamicReferences();
+            Breathing();
         }
         if (isBoosting)
         {
@@ -146,6 +158,9 @@ public class PlayerRB : MonoBehaviour
         setDynamicReferences();
         disableControlCheck();
         CountDown();
+        HandLogic();
+        CheckGas();
+        
     }
 
 
@@ -177,22 +192,25 @@ public class PlayerRB : MonoBehaviour
         }
     }
 
-    #endregion
-
     private void setDynamicReferences()
     {
-        this.GetComponent<InfoBuffer>().isNoisy = !isSneaking;
-        this.GetComponent<InfoBuffer>().isInCover = isInCover;
-        this.GetComponent<InfoBuffer>().isGrounded = grounded;
+        infoBuffer.isNoisy = !isSneaking;
+        infoBuffer.isInCover = isInCover;
+        infoBuffer.isGrounded = grounded;
         this.GetComponent<PlayerSettings>().isGrabbable = isGrabbable;
         this.GetComponent<PlayerSettings>().grabRange = grabRange;
+        this.GetComponent<PlayerSettings>().playerHeight = playerHeight;
         isBoosting = this.GetComponent<InfoBuffer>().isBoosting;
+        infoBuffer = this.GetComponent<InfoBuffer>();
     }
 
-    #region Movement Basic
+    #endregion
+
+    #region Movement
 
     private void SimpleMove()
     {
+
         move = Vector3.ClampMagnitude(new Vector3(0, 0, Input.GetAxis("Vertical")), 1);
         transform.Rotate(0, Input.GetAxis("Horizontal") * turnSpeed * Time.deltaTime, 0);
         velocity += move;
@@ -268,7 +286,7 @@ public class PlayerRB : MonoBehaviour
     #endregion
 
     #region Grounding
-    
+
     private bool grounded;
     private Vector3 liftPoint = new Vector3(0, 0, 0);
     private RaycastHit groundHit;
@@ -387,7 +405,7 @@ public class PlayerRB : MonoBehaviour
                 }
                 else return;
             }
-            else if (isHolding&&grounded)
+            else if (isHolding && grounded)
             {
                 Drop();
             }
@@ -565,45 +583,6 @@ public class PlayerRB : MonoBehaviour
     }
     #endregion // to do
     //beta
-
-    #region Cover System
-    /* Cover System will be utilized in another script. The basic form
-     * of the cover system will look like the following:
-     * If the player is holding sneak, and they approach a wall with
-     * reasonable intent, they will snap to that wall, drop the calf
-     * if they are carrying it, and turn to face parallel but away
-     * from the wall in question.
-     * 
-     * It will do this by first sending out a raycast, checking whether
-     * there is a box collider in front of the player. If there is,
-     * check tags, and then check the angle of collision:
-     * 
-     * Vector3.Angle(normal,rayName)
-     * 
-     * If the raycast is successful through tag check, the player is rotated
-     * according to the following formula-
-     * 
-     * ((90 + |x|)*(|x|/x)) degrees.
-     * 
-     * The player will then snap to the point of intersection, plus
-     * a buffer unit in the forward direction.
-     * 
-     * As long as sneak is held, the player can only move left or
-     * right along the wall. A checker object will come out of the
-     * wall at a buffer distance to the direction the player
-     * is trying to walk, will raycast in 3 spots toward the wall
-     * and if any detect a collision with a box collider of the
-     * correct type and at the correct angle and distance, the checker
-     * will set it's current position as the next position for the
-     * player to be able to move toward, and make another check. If
-     * the check fails, new temporary position shouldn't update, allowing
-     * the player to only walk to the last successful check. 
-     * 
-     * The raycast should also still rotate the player based on the 
-     * relative rotation of the wall.
-    */
-    #endregion
-    //todo
     #region Disable Control
 
     private void disableControlCheck()
@@ -613,6 +592,8 @@ public class PlayerRB : MonoBehaviour
     }
 
     #endregion
+
+    #region Record Safe Ground
     private float time;
 
     private void detectGroundSwitch()
@@ -627,4 +608,165 @@ public class PlayerRB : MonoBehaviour
             time = 0;
         }
     }
+    #endregion
+
+    #region Inventory
+
+    private void OnCollisionEnter(Collision hit)
+    {
+        IInventoryItem item = hit.collider.GetComponent<IInventoryItem>();
+        if (item != null)
+        {
+            inventory.AddItem(item);
+        }
+        Debug.Log(inventory);
+    }
+    /*This currently picks up any item with an item script on it automatically. In the future,
+     * an animation will play and then if the object collides with the hands, add it to the inventory.
+     *Default pickup hand should always be the left hand, if left hand is filled right hand switch
+     *
+     */
+    #endregion
+    //beta
+    #region Breathing
+    float timePassed = 0f;
+    public float breathTime = 5f;
+    public float breathOvertime = 2f;
+    public float gulpForAirtTime = 2f;
+    public bool breathing = true;
+    private bool gulpingForAir;
+
+    Color colorBuffer;
+    private void Breathing()
+    {
+        
+        if ((Input.GetButton("leftuse") && freeHand == leftObject) || (Input.GetButton("rightuse") && freeHand == rightObject))
+        {
+            timePassed += Time.deltaTime;
+            Debug.Log("Holding breath");
+            GetComponent<Renderer>().material.color = Color.Lerp(colorBuffer, Color.blue, (timePassed/breathTime));
+            breathing = false;
+        }
+        else
+        {
+            timePassed = 0;
+            GetComponent<Renderer>().material.color = colorBuffer;
+            breathing = true;
+        }
+
+        if (timePassed > breathTime)
+        {
+            float t = Mathf.PingPong(Time.time * 3f, 1.0f);
+            GetComponent<Renderer>().material.color = Color.Lerp(Color.blue,Color.black,t); }
+        if (timePassed > breathOvertime)
+        {
+
+            GetComponent<Renderer>().material.color = Color.black;
+            breathing = true;
+            Debug.Log("Gulp for air");
+            disableControl = true;
+            gulpingForAir = true;
+            timePassed = 0;
+        }
+    }
+    float newTime = 0;
+    private void GulpCheck()
+    {
+        if (gulpingForAir)
+        {
+            disableControl = true;
+            
+            newTime += Time.deltaTime;
+            if (newTime < gulpForAirtTime)
+            {
+                breathing = true;
+                timePassed = 0;
+            }
+            else
+            {
+                breathing = false;
+                gulpingForAir = false;
+                newTime = 0;
+                disableControl = false;
+            }
+        }
+    }
+    /*This should be used in conjunction with the items held mechanism instead of within the
+     * player script. Any hand that is free should run the breathing command, with the default being
+     *the right hand.
+     *
+     */
+
+    private void CheckGas()
+    {
+        if (breathing && infoBuffer.inGas)
+        {
+            Debug.Log("You're in Gas and Breathing. You are now dead");
+        }
+    }
+
+    #endregion
+    //beta
+    #region HandLogic
+
+    private void HandLogic()
+    {
+        SetFreeHand();
+        PlaceFreeHand();
+    }
+
+    private void SetFreeHand()
+    {
+        if (leftObject == null)
+        {
+            if (rightObject == freeHand)
+            { rightObject = null; }
+            freeHand.SetActive(true); leftObject = freeHand;
+        }
+
+        else
+        {
+            if (rightObject == null && leftObject != freeHand)
+            { freeHand.SetActive(true); rightObject = freeHand; }
+        }
+        if(rightObject != freeHand && leftObject != freeHand)
+        { freeHand.SetActive(false); }
+    }
+
+    private void PlaceFreeHand()
+    {
+        if (freeHand.activeSelf)
+        {
+            if (leftObject == freeHand)
+            { freeHand.transform.position = leftHand.position; freeHand.transform.SetParent(leftHand); }
+
+            if (rightObject == freeHand)
+            { freeHand.transform.position = rightHand.position; freeHand.transform.SetParent(rightHand); }
+
+            if (rightObject != freeHand && leftObject!= freeHand)
+            { freeHand.SetActive(false); Debug.Log("this should never have happened"); }
+        }
+    }
+
+    private void HandUse()
+    {
+        if (leftObject != null && leftObject != freeHand)
+        {
+            //item.leftbool = true
+            //item.position = leftHand.position
+            //run item
+
+        }
+        if (rightObject != null && rightObject != freeHand)
+        {
+            //item.leftbool = false
+            //item.position = rightHand.position
+            //run item 
+        }
+    }
+    #endregion
+
+    //Pickup Items and Breathing need to be removed. -269 lines of code, putting us at around 550.
+    //Need to reduce the amount of variables in this class. 80 is too many.
+    //With stealth removed we'd cut out another 70 lines of code.
 }

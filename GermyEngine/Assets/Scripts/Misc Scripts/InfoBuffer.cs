@@ -23,6 +23,7 @@ public class InfoBuffer : MonoBehaviour
 
     public bool isNoisy;
     public bool isSmelly;
+    public bool inGas;
 
     public bool toggleDebug;
 

@@ -81,7 +81,7 @@ public class CameraController : MonoBehaviour {
         // originally target.transform.position, -target.transform.forward;
 		RaycastHit hit;
 
-		if (Physics.SphereCast (ray, 0.2f, out hit, 0.7f, collisionMask)) {
+		if (Physics.SphereCast (ray, 0.2f, out hit, evenCloserDistanceToPlayer, collisionMask)) {
 			pitchLock = true;
 		} else {
 			pitchLock = false;
@@ -98,7 +98,8 @@ public class CameraController : MonoBehaviour {
 
 			TransparencyCheck();
 
-			if (Vector3.Distance(Vector3.Lerp (transform.position, p, moveSpeed * Time.deltaTime), target.position) <= evenCloserDistanceToPlayer) {
+			if (Vector3.Distance(Vector3.Lerp (transform.position, p, moveSpeed * Time.deltaTime), target.position) <= evenCloserDistanceToPlayer)
+            {
 
 			} else {
 				transform.position = Vector3.Lerp (transform.position, p, moveSpeed * Time.deltaTime);

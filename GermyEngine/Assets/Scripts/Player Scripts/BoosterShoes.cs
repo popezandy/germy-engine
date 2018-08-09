@@ -76,7 +76,6 @@ public class BoosterShoes : MonoBehaviour {
 
     public void StartBoost()
     {
-        Debug.Log("logic is sound it's just broken movement code");
         this.Rb.useGravity = false;
         transform.Translate(0, 0, boostSpeed * Time.deltaTime);
         this.transform.position = new Vector3(this.transform.position.x, yTransformBuffer, this.transform.position.z);
